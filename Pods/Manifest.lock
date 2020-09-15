@@ -1,0 +1,44 @@
+PODS:
+  - Carbon (1.0.0-rc.6):
+    - DifferenceKit/Core (~> 1.1)
+  - DifferenceKit (1.1.5):
+    - DifferenceKit/Core (= 1.1.5)
+    - DifferenceKit/UIKitExtension (= 1.1.5)
+  - DifferenceKit/Core (1.1.5)
+  - DifferenceKit/UIKitExtension (1.1.5):
+    - DifferenceKit/Core
+  - TermiNetwork (1.0.0)
+
+DEPENDENCIES:
+  - Carbon (from `https://github.com/ra1028/Carbon`, commit `9e572593e02ce77e54932d46d130054a13e2a056`)
+  - DifferenceKit
+  - TermiNetwork (from `https://github.com/billp/TermiNetwork`, branch `1.0.0-new-structure`)
+
+SPEC REPOS:
+  trunk:
+    - DifferenceKit
+
+EXTERNAL SOURCES:
+  Carbon:
+    :commit: 9e572593e02ce77e54932d46d130054a13e2a056
+    :git: https://github.com/ra1028/Carbon
+  TermiNetwork:
+    :branch: 1.0.0-new-structure
+    :git: https://github.com/billp/TermiNetwork
+
+CHECKOUT OPTIONS:
+  Carbon:
+    :commit: 9e572593e02ce77e54932d46d130054a13e2a056
+    :git: https://github.com/ra1028/Carbon
+  TermiNetwork:
+    :commit: 7efbfb8dda7c0388085121dee5e42883528edc87
+    :git: https://github.com/billp/TermiNetwork
+
+SPEC CHECKSUMS:
+  Carbon: 84c3402754e682960ef85dd20a2fe44c723701d2
+  DifferenceKit: 516f12e336ed65a3a0665847b5c3cb5cad4bd4ea
+  TermiNetwork: 1a2175afdf5423140108576a5b6ab360f36e2780
+
+PODFILE CHECKSUM: bd27d43dd07b34e0774aaffa0873ebe70c4bae5e
+
+COCOAPODS: 1.9.2

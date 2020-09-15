@@ -1,0 +1,23 @@
+{
+  "name": "TermiNetwork",
+  "version": "1.0.0",
+  "summary": "A Networking Library written in Swift 5.0",
+  "description": "TermiNetwork is a networking library written in Swift 5.0 that supports multi-environment configuration, routing and automatic deserialization.",
+  "homepage": "https://github.com/billp/TermiNetwork.git",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Bill Panagiotopoulos": "billp.dev@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/billp/TermiNetwork.git",
+    "branch": "1.0.0-new-structure",
+    "tag": "1.0.0"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source_files": "Source/**/*"
+}
