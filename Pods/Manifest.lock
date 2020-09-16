@@ -31,7 +31,7 @@ CHECKOUT OPTIONS:
     :commit: 9e572593e02ce77e54932d46d130054a13e2a056
     :git: https://github.com/ra1028/Carbon
   TermiNetwork:
-    :commit: 7efbfb8dda7c0388085121dee5e42883528edc87
+    :commit: 504b7dc1a6a90277f64580056d08e33954aee0b6
     :git: https://github.com/billp/TermiNetwork
 
 SPEC CHECKSUMS:

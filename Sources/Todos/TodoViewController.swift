@@ -20,6 +20,9 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
     @IBOutlet var inputViewHidden: NSLayoutConstraint!
     @IBOutlet var inputViewBottom: NSLayoutConstraint!
 
+    // Create Todo Router
+    fileprivate var todoRouter = TNRouter<TodoRoute>()
+
     var state = State() {
         didSet { render() }
     }
@@ -43,7 +46,9 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
         tableView.contentInset.bottom = view.bounds.height - addButton.frame.minY
         renderer.target = tableView
 
-        fetchTodos(success: {
+        apiTodos(success: { (completed, uncompleted) in
+            self.state.completed = completed
+            self.state.todos = uncompleted
             self.render()
         })
     }
@@ -62,11 +67,9 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
                             TodoText(todo: todo, isCompleted: false) { [weak self] event in
                                 switch event {
                                 case .toggleCompleted:
-                                    self?.state.todos.remove(at: offset)
-                                    self?.state.completed.append(todo)
-
+                                    self?.completeTodo(todo, offset: offset)
                                 case .delete:
-                                    self?.state.todos.remove(at: offset)
+                                    self?.deleteUncompletedTodo(todo, offset: offset)
                                 }
                             }
                         }
@@ -82,11 +85,9 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
                             TodoText(todo: todo, isCompleted: true) { [weak self] event in
                                 switch event {
                                 case .toggleCompleted:
-                                    self?.state.completed.remove(at: offset)
-                                    self?.state.todos.append(todo)
-
+                                    self?.uncompleteTodo(todo, offset: offset)
                                 case .delete:
-                                    self?.state.completed.remove(at: offset)
+                                    self?.deleteCompletedTodo(todo, offset: offset)
                                 }
                             }
                         }
@@ -101,9 +102,13 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
         }
 
         let id = state.todos.count + 1
-        state.todos.append(Todo(id: id, text: inputText))
-        inputTextView.resignFirstResponder()
-        textView.text = nil
+        let todo = Todo(id: id, text: inputText)
+
+        apiAddTodo(todo: todo) {
+            self.state.todos.append(todo)
+            self.inputTextView.resignFirstResponder()
+            textView.text = nil
+        }
 
         return false
     }
@@ -130,22 +135,80 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
     }
 
     // MARK: Helpers
-    private func fetchTodos(success: (()->())?) {
-        let router = TNRouter<TodoRoute>()
-        router.request(for: .todos).start(responseType: RSTodosResponse.self, onSuccess: { response in
-            self.mapTodos(response.todos)
+    private func completeTodo(_ todo: Todo, offset: Int) {
+        apiToggleTodo(todo: todo) {
+            self.state.todos.remove(at: offset)
+            self.state.completed.append(todo)
+        }
+    }
+
+    private func uncompleteTodo(_ todo: Todo, offset: Int) {
+        apiToggleTodo(todo: todo) {
+            self.state.completed.remove(at: offset)
+            self.state.todos.append(todo)
+        }
+    }
+
+    private func deleteCompletedTodo(_ todo: Todo, offset: Int) {
+        apiDeleteTodo(todo: todo) {
+            self.state.completed.remove(at: offset)
+        }
+    }
+
+    private func deleteUncompletedTodo(_ todo: Todo, offset: Int) {
+        apiDeleteTodo(todo: todo) {
+            self.state.todos.remove(at: offset)
+        }
+    }
+
+    // MARK: Networking Helpers
+    private func apiTodos(success: (([Todo], [Todo])->())?) {
+        todoRouter.request(for: .todos).start(responseType: RSTodosResponse.self,
+                                              onSuccess: { response in
+
+            let todos = self.mapTodos(response.todos)
+            success?(todos.completed, todos.uncompleted)
+        }) { (error, data) in
+            debugPrint(error.localizedDescription as Any)
+        }
+    }
+
+    private func apiAddTodo(todo: Todo, success: (()->())?) {
+        todoRouter.request(for: .addTodo(text: todo.text)).start(responseType: GenericSuccess.self,
+                                                                 onSuccess: { response in
             success?()
         }) { (error, data) in
             debugPrint(error.localizedDescription as Any)
         }
     }
 
-    private func mapTodos(_ todos: [RSTodo]) {
+    private func apiDeleteTodo(todo: Todo, success: (()->())?) {
+        todoRouter.request(for: .deleteTodo(id: todo.id)).start(responseType: GenericSuccess.self,
+                                                                onSuccess: { response in
+            success?()
+        }) { (error, data) in
+            debugPrint(error.localizedDescription as Any)
+        }
+    }
+
+    private func apiToggleTodo(todo: Todo, success: (()->())?) {
+        let completed = !state.completed.contains(where: { $0.id == todo.id })
+        todoRouter.request(for: .updateTodo(id: todo.id,
+                                            text: todo.text,
+                                            completed: completed)).start(responseType: GenericSuccess.self,
+                                                                         onSuccess: { response in
+            success?()
+        }) { (error, data) in
+            debugPrint(error.localizedDescription as Any)
+        }
+    }
+
+    private func mapTodos(_ todos: [RSTodo]) -> (completed: [Todo], uncompleted: [Todo]) {
         let rsTodos = todos.filter({ !$0.completed })
         let rsTodosCompleted = todos.filter({ $0.completed })
 
-        state.todos = rsTodos.map({ Todo.init(id: $0.id, text: $0.title) })
-        state.completed = rsTodosCompleted.map { Todo.init(id: $0.id, text: $0.title) }
+        return (completed: rsTodos.map({ Todo.init(id: $0.id, text: $0.title) }),
+                uncompleted: rsTodosCompleted.map { Todo.init(id: $0.id, text: $0.title) })
     }
 }
 

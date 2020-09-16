@@ -18,23 +18,30 @@ enum Environment: TNEnvironmentProtocol {
     func configure() -> TNEnvironment {
         switch self {
             case .dev:
-                return TNEnvironment(scheme: .http, host: "localhost", configuration: configuration)
+                return TNEnvironment(scheme: .http, host: "localhost", port: 3000, configuration: configuration)
             case .qa:
                 return TNEnvironment(scheme: .http, host: "10.0.0.10")
             case .uat:
                 return TNEnvironment(scheme: .https, host: "132.168.0.13")
             case .production:
-                return TNEnvironment(scheme: .https, host: "google.com", suffix: .path(["v1"]))
+                return TNEnvironment(scheme: .https, host: "liveserver.com", suffix: .path(["v1"]))
         }
     }
 
     private var configuration: TNConfiguration {
         let conf = TNConfiguration()
-        let mockDataPath = Bundle.main.path(forResource: "MockData", ofType: "bundle") ?? ""
 
-        conf.useMockData = true
+        // Enable debug mode
         conf.verbose = true
-        conf.mockDataBundle = Bundle.init(path: mockDataPath)
+
+        // Set JSON as default param encode type
+        conf.requestBodyType = .JSON
+
+        // Use mock data
+        if let mockDataPath = Bundle.main.path(forResource: "MockData", ofType: "bundle") {
+            conf.mockDataBundle = Bundle.init(path: mockDataPath)
+            conf.useMockData = true
+        }
         return conf
     }
 }
