@@ -21,7 +21,7 @@ enum TodoRoute: TNRouteProtocol {
         case .todos:
             return TNRouteConfiguration(method: .get,
                                         path: .path(["todos"]),
-                                        mockFilePath: .path(["Todos", "index.json"])) // Generates: http(s)://.../todos
+                                        mockFilePath: .path(["Todos", "index.json"]))
         case .todo(let id):
             return TNRouteConfiguration(method: .get,
                                         path: .path(["todos", String(id)]))
@@ -31,7 +31,7 @@ enum TodoRoute: TNRouteProtocol {
                                         params: ["text": text],
                                         mockFilePath: .path(["GenericResponse", "generic-success.json"]))
         case .updateTodo(let id, let text, let completed):
-            return TNRouteConfiguration(method: .post,
+            return TNRouteConfiguration(method: .patch,
                                         path: .path(["todos", String(id)]),
                                         params: ["text": text, "completed": completed],
                                         mockFilePath: .path(["GenericResponse", "generic-success.json"]))
