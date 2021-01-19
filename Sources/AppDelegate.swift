@@ -31,6 +31,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func configureNetworking() {
-        TNEnvironment.set(Environment.dev)
+        Environment.set(Env.dev)
     }
 }

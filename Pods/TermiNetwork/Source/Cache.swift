@@ -1,4 +1,4 @@
-// Request+Extensions.swift
+// Cache.swift
 //
 // Copyright © 2018-2021 Vasilis Panagiotopoulos. All rights reserved.
 //
@@ -19,35 +19,39 @@
 
 import Foundation
 
-extension URLRequest {
-    /// Returns a cURL command representation of this URL request.
-    /// Taken from: https://gist.github.com/shaps80/ba6a1e2d477af0383e8f19b87f53661d
-    internal var curlString: String {
-        guard let url = url else { return "" }
-        var baseCommand = "curl \(url.absoluteString)"
+/// Cache is used internally for various tasks such as in-memory caching image data.
+/// Primarily used in UIImageView|NSImageView|WKInterfaceImage and Image (SwiftUI) helpers.
+public final class Cache {
+    /// Singleton object.
+    public static let shared = Cache()
 
-        if httpMethod == "HEAD" {
-            baseCommand += " --head"
-        }
+    /// Singleton definition
+    let cache: NSCache<NSString, NSData> = NSCache()
 
-        var command = [baseCommand]
-
-        if let method = httpMethod, method != "GET" && method != "HEAD" {
-            command.append("-X \(method)")
-        }
-        if let headers = allHTTPHeaderFields {
-            for (key, value) in headers where key != "Cookie" {
-                command.append("-H '\(key): \(value)'")
-            }
-        }
-        if let data = httpBody, let body = String(data: data, encoding: .utf8) {
-            command.append("-d '\(body)'")
-        }
-
-        return command.joined(separator: " \\\n\t")
+    /// Configures the cache.
+    /// - Parameters:
+    ///     - countLimit: The maximum number of objects the cache will hold.
+    ///     - size: The maximum total size (in bytes) the cache will hold before it starts removing objects.
+    public func configureCache(countLimit: Int, size: Int) {
+        cache.countLimit = countLimit
+        cache.totalCostLimit = size
     }
 
-    init?(curlString: String) {
-        return nil
+    /// Clears cache.
+    public func clearCache() {
+        cache.removeAllObjects()
+    }
+
+    /// :nodoc:
+    subscript(key: String) -> Data? {
+        get {
+            cache.object(forKey: key as NSString) as Data?
+        }
+        set {
+            guard let data = newValue as NSData? else {
+                return
+            }
+            cache.setObject(data, forKey: key as NSString)
+        }
     }
 }

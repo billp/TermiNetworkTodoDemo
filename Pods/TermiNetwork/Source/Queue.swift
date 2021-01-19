@@ -1,6 +1,6 @@
-// TNQueue.swift
+// Queue.swift
 //
-// Copyright © 2018-2020 Vasilis Panagiotopoulos. All rights reserved.
+// Copyright © 2018-2021 Vasilis Panagiotopoulos. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in the
@@ -12,7 +12,7 @@
 // or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FIESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -20,7 +20,7 @@
 import Foundation
 
 /// Type that specifies the behavior of the queue when a request fails
-public enum TNQueueFailureMode {
+public enum QueueFailureMode {
     /// Cancels the execution of the queue after a request (operation) fails
     case cancelAll
     /// Continues the execution of the queue after a request (operation) fails
@@ -28,34 +28,33 @@ public enum TNQueueFailureMode {
 }
 
 /// Hook type for beforeAllRequestsCallback queue property
-public typealias TNBeforeQueueStartCallbackType = () -> Void
+public typealias BeforeQueueStartCallbackType = () -> Void
 /// Hook type for afterAllRequestsCallback queue property
 /// - Parameters:
 ///   - hasError:Passes a Boolean value which indicates if any of the request in queue has completed with error.
-public typealias TNAfterAllRequestsCallbackType = (_ hasError: Bool) -> Void
+public typealias AfterAllRequestsCallbackType = (_ hasError: Bool) -> Void
 /// Hook type for beforeEachRequestCallback queue property
 /// - Parameters:
-///   - request:The actual TNRequest instance.
-public typealias TNBeforeEachRequestCallbackType = (_ request: TNRequest) -> Void
+///   - request:The actual Request instance.
+public typealias BeforeEachRequestCallbackType = (_ request: Request) -> Void
 /// Hook type for afterEachRequestCallback queue property
 /// - Parameters:
-///   - request:The actual TNRequest instance.
+///   - request:The actual Request instance.
 ///   - data: The response data
 ///   - response: The URLResponse
 ///   - error:The network error (if any)
-public typealias TNAfterEachRequestCallbackType = (
-    _ request: TNRequest,
+public typealias AfterEachRequestCallbackType = (
+    _ request: Request,
     _ data: Data?,
     _ response: URLResponse?,
     _ error: Error?) -> Void
 
-/// This class can be used to create custom queues
-open class TNQueue: OperationQueue {
+/// Use this class to create custom queues.
+public final class Queue: OperationQueue {
     // MARK: Static properties
 
-    /// The global queue of TermiNetwork. If no queue is specified to TNRequest instances,
-    /// they are added to this instance.
-    public static var shared = TNQueue()
+    /// The default queue of TermiNetwork used in all Request objects.
+    public static var shared = Queue()
 
     // MARK: Private properties
 
@@ -63,16 +62,16 @@ open class TNQueue: OperationQueue {
 
     // MARK: Hooks
 
-    /// Hooks  with a block of code to run before the queue is started.
-    public var beforeAllRequestsCallback: TNBeforeQueueStartCallbackType?
-    /// Hooks with a block of code to run after the queue is finished.
-    public var afterAllRequestsCallback: TNAfterAllRequestsCallbackType?
-    /// Hooks with a block of code to run before each request execution in the queue.
-    public var beforeEachRequestCallback: TNBeforeEachRequestCallbackType?
-    /// Hooks with a block of code to run after the completion of request execution in the queue
-    public var afterEachRequestCallback: TNAfterEachRequestCallbackType?
+    /// A closure to be executed before the queue starts executing its requests.
+    public var beforeAllRequestsCallback: BeforeQueueStartCallbackType?
+    /// A closure to be executed after the queue finishes the execution of all its requests.
+    public var afterAllRequestsCallback: AfterAllRequestsCallbackType?
+    /// A closure to be executed before a request execution in queue.
+    public var beforeEachRequestCallback: BeforeEachRequestCallbackType?
+    /// A closure to be executed after a request finishes its execution in queue.
+    public var afterEachRequestCallback: AfterEachRequestCallbackType?
 
-    internal var failureMode: TNQueueFailureMode = .continue
+    internal var failureMode: QueueFailureMode = .continue
 
     // MARK: Initializers
 
@@ -81,20 +80,13 @@ open class TNQueue: OperationQueue {
     /// - parameters:
     ///     - failureMode: Supported values are .continue (continues the execution of queue even if a request fails,
     ///      this is the default) and .cancelAll (cancels all the remaining requests in queue)
-    public init(failureMode: TNQueueFailureMode = .continue) {
+    public init(failureMode: QueueFailureMode = .continue) {
         super.init()
 
         self.failureMode = failureMode
     }
 
-    internal func beforeOperationStart(request: TNRequest) {
-        if operationCount == 0 {
-            beforeAllRequestsCallback?()
-        }
-        beforeEachRequestCallback?(request)
-    }
-
-    internal func afterOperationFinished(request: TNRequest,
+    internal func afterOperationFinished(request: Request,
                                          data: Data?,
                                          response: URLResponse?,
                                          tnError: Error?) {
@@ -110,16 +102,20 @@ open class TNQueue: OperationQueue {
 
     // MARK: Public methods
 
-    /// Adds a TNRequest instane into queue.
+    /// Adds a Request instance into queue.
     ///
     /// - parameters:
     ///     - failureMode: Supported values are .continue (continues the execution of queue even if a request fails,
     ///      this is the default) and .cancelAll (cancels all the remaining requests in queue)
-    override open func addOperation(_ operation: Operation) {
-        if let request = operation as? TNRequest {
-            guard !request.shouldMockRequest() else {
-                return
-            }
+    override public func addOperation(_ operation: Foundation.Operation) {
+        guard !operation.isExecuting && !operation.isFinished else {
+            return
+        }
+        if operationCount == 0 {
+            beforeAllRequestsCallback?()
+        }
+
+        if let request = operation as? Request {
             guard request.dataTask != nil else {
                 return
             }

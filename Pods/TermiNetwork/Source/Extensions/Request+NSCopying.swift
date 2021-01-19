@@ -1,4 +1,4 @@
-// Request+Extensions.swift
+// Request+NSCopying.swift
 //
 // Copyright © 2018-2021 Vasilis Panagiotopoulos. All rights reserved.
 //
@@ -19,35 +19,25 @@
 
 import Foundation
 
-extension URLRequest {
-    /// Returns a cURL command representation of this URL request.
-    /// Taken from: https://gist.github.com/shaps80/ba6a1e2d477af0383e8f19b87f53661d
-    internal var curlString: String {
-        guard let url = url else { return "" }
-        var baseCommand = "curl \(url.absoluteString)"
+extension Request: NSCopying {
+    /// Clones a Request instance.
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let request = Request()
+        request.method = method
+        request.queue = queue
+        request.params = params
+        request.path = path
+        request.pathType = pathType
+        request.mockFilePath = mockFilePath
+        request.multipartBoundary = multipartBoundary
+        request.multipartFormDataStream = multipartFormDataStream
+        request.requestType = requestType
+        request.headers = headers
+        request.environment = environment
+        request.associatedObject = associatedObject
+        request.configuration = configuration.copy() as? Configuration
+            ?? Configuration.makeDefaultConfiguration()
 
-        if httpMethod == "HEAD" {
-            baseCommand += " --head"
-        }
-
-        var command = [baseCommand]
-
-        if let method = httpMethod, method != "GET" && method != "HEAD" {
-            command.append("-X \(method)")
-        }
-        if let headers = allHTTPHeaderFields {
-            for (key, value) in headers where key != "Cookie" {
-                command.append("-H '\(key): \(value)'")
-            }
-        }
-        if let data = httpBody, let body = String(data: data, encoding: .utf8) {
-            command.append("-d '\(body)'")
-        }
-
-        return command.joined(separator: " \\\n\t")
-    }
-
-    init?(curlString: String) {
-        return nil
+        return request
     }
 }

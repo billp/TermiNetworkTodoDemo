@@ -1,4 +1,4 @@
-// Request+Extensions.swift
+// Router.swift
 //
 // Copyright © 2018-2021 Vasilis Panagiotopoulos. All rights reserved.
 //
@@ -19,35 +19,28 @@
 
 import Foundation
 
-extension URLRequest {
-    /// Returns a cURL command representation of this URL request.
-    /// Taken from: https://gist.github.com/shaps80/ba6a1e2d477af0383e8f19b87f53661d
-    internal var curlString: String {
-        guard let url = url else { return "" }
-        var baseCommand = "curl \(url.absoluteString)"
+/// This class is used to create instances of Router that can be used to start requests based on the given Route.
+public final class Router<Route: RouteProtocol> {
+    // MARK: Properties
+    fileprivate var environment: Environment?
 
-        if httpMethod == "HEAD" {
-            baseCommand += " --head"
-        }
+    /// Router configuration
+    public var configuration: Configuration?
 
-        var command = [baseCommand]
-
-        if let method = httpMethod, method != "GET" && method != "HEAD" {
-            command.append("-X \(method)")
-        }
-        if let headers = allHTTPHeaderFields {
-            for (key, value) in headers where key != "Cookie" {
-                command.append("-H '\(key): \(value)'")
-            }
-        }
-        if let data = httpBody, let body = String(data: data, encoding: .utf8) {
-            command.append("-d '\(body)'")
-        }
-
-        return command.joined(separator: " \\\n\t")
+    /// Initialize with environment that overrides the one set by Environment.set(_).
+    public init(environment: EnvironmentProtocol? = nil,
+                configuration: Configuration? = nil) {
+        self.environment = environment?.configure() ?? Environment.current
+        self.configuration = configuration
     }
 
-    init?(curlString: String) {
-        return nil
+    /// Returns a Request that can be used later, e.g. for starting the request in a later time or canceling it.
+    ///
+    /// - parameters:
+    ///    - route: a RouteProtocol enum value
+    public func request(for route: Route) -> Request {
+        return Request(route: route,
+                       environment: environment,
+                       configuration: configuration)
     }
 }

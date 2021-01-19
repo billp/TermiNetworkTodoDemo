@@ -1,4 +1,4 @@
-// Request+Extensions.swift
+// FileStreamer.swift
 //
 // Copyright © 2018-2021 Vasilis Panagiotopoulos. All rights reserved.
 //
@@ -19,35 +19,34 @@
 
 import Foundation
 
-extension URLRequest {
-    /// Returns a cURL command representation of this URL request.
-    /// Taken from: https://gist.github.com/shaps80/ba6a1e2d477af0383e8f19b87f53661d
-    internal var curlString: String {
-        guard let url = url else { return "" }
-        var baseCommand = "curl \(url.absoluteString)"
+typealias ChunkType = (Data?) -> Void
 
-        if httpMethod == "HEAD" {
-            baseCommand += " --head"
-        }
+internal class FileStreamer {
+    var nextChunkClosure: ChunkType?
+    var bufferSize: Int = 1024
+    var fileSize: Int = -1
+    var sizeRead: Int = 0
+    var bytesRead: Int = 0
+    var fileHandle: FileHandle?
+    var url: URL
 
-        var command = [baseCommand]
+    lazy var buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
 
-        if let method = httpMethod, method != "GET" && method != "HEAD" {
-            command.append("-X \(method)")
-        }
-        if let headers = allHTTPHeaderFields {
-            for (key, value) in headers where key != "Cookie" {
-                command.append("-H '\(key): \(value)'")
-            }
-        }
-        if let data = httpBody, let body = String(data: data, encoding: .utf8) {
-            command.append("-d '\(body)'")
-        }
-
-        return command.joined(separator: " \\\n\t")
+    init(url: URL, bufferSize: Int) {
+        self.url = url
+        self.bufferSize = bufferSize
+        self.fileSize = MultipartFormDataHelpers.fileSize(withURL: url)
+        self.fileHandle = FileHandle(forReadingAtPath: url.path)
     }
 
-    init?(curlString: String) {
-        return nil
+    func readNextChunk(seekToOffset offset: Int = 0, nextChunkClosure: ChunkType? = nil) throws {
+        if let fileHandle = fileHandle {
+            autoreleasepool {
+                try? fileHandle.seek(toOffset: UInt64(offset))
+                self.sizeRead = offset + self.bufferSize
+                let data = fileHandle.readData(ofLength: self.bufferSize)
+                    nextChunkClosure?(data)
+            }
+        }
     }
 }

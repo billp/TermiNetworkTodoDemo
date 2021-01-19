@@ -1,4 +1,4 @@
-// Request+Extensions.swift
+// Request+ResponseHeaders.swift
 //
 // Copyright © 2018-2021 Vasilis Panagiotopoulos. All rights reserved.
 //
@@ -19,35 +19,31 @@
 
 import Foundation
 
-extension URLRequest {
-    /// Returns a cURL command representation of this URL request.
-    /// Taken from: https://gist.github.com/shaps80/ba6a1e2d477af0383e8f19b87f53661d
-    internal var curlString: String {
-        guard let url = url else { return "" }
-        var baseCommand = "curl \(url.absoluteString)"
-
-        if httpMethod == "HEAD" {
-            baseCommand += " --head"
+/// Request extension for response headers.
+public extension Request {
+    ///
+    /// Reads the response headers from request after its completion.
+    /// - parameters:
+    ///     - headersCallback: A closure that provides the response headers or an error.
+    func responseHeaders(_ headersCallback: @escaping ([String: String]?, TNError?) -> Void) {
+        guard dataTask != nil else {
+            headersCallback(nil, .cannotReadResponseHeaders)
+            return
         }
 
-        var command = [baseCommand]
-
-        if let method = httpMethod, method != "GET" && method != "HEAD" {
-            command.append("-X \(method)")
+        guard processedHeaders == nil else {
+            headersCallback(processedHeaders, nil)
+            return
         }
-        if let headers = allHTTPHeaderFields {
-            for (key, value) in headers where key != "Cookie" {
-                command.append("-H '\(key): \(value)'")
+
+        self.responseHeadersClosure = { [weak self] urlResponse in
+            guard let headers = (urlResponse as? HTTPURLResponse)?.allHeaderFields as? [String: String],
+                  let processedHeaders = try? self?.handleMiddlewareHeadersAfterReceiveIfNeeded(headers: headers) else {
+                headersCallback(nil, .cannotReadResponseHeaders)
+                return
             }
+            self?.processedHeaders = processedHeaders
+            headersCallback(processedHeaders, nil)
         }
-        if let data = httpBody, let body = String(data: data, encoding: .utf8) {
-            command.append("-d '\(body)'")
-        }
-
-        return command.joined(separator: " \\\n\t")
-    }
-
-    init?(curlString: String) {
-        return nil
     }
 }

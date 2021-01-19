@@ -9,27 +9,27 @@
 import Foundation
 import TermiNetwork
 
-enum Environment: TNEnvironmentProtocol {
+enum Env: EnvironmentProtocol {
     case dev
     case qa
     case uat
     case production
 
-    func configure() -> TNEnvironment {
+    func configure() -> Environment {
         switch self {
             case .dev:
-                return TNEnvironment(scheme: .http, host: "localhost", port: 3000, configuration: configuration)
+                return Environment(scheme: .http, host: "localhost", port: 3000, configuration: configuration)
             case .qa:
-                return TNEnvironment(scheme: .http, host: "10.0.0.10")
+                return Environment(scheme: .http, host: "10.0.0.10")
             case .uat:
-                return TNEnvironment(scheme: .https, host: "132.168.0.13")
+                return Environment(scheme: .https, host: "132.168.0.13")
             case .production:
-                return TNEnvironment(scheme: .https, host: "liveserver.com", suffix: .path(["v1"]))
+                return Environment(scheme: .https, host: "liveserver.com", suffix: .path(["v1"]))
         }
     }
 
-    private var configuration: TNConfiguration {
-        let conf = TNConfiguration()
+    private var configuration: Configuration {
+        let conf = Configuration()
 
         // Enable debug mode
         conf.verbose = true
@@ -40,7 +40,7 @@ enum Environment: TNEnvironmentProtocol {
         // Use mock data
         if let mockDataPath = Bundle.main.path(forResource: "MockData", ofType: "bundle") {
             conf.mockDataBundle = Bundle.init(path: mockDataPath)
-            conf.useMockData = true
+            conf.mockDataEnabled = true
         }
         return conf
     }

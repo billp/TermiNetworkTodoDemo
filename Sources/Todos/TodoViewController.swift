@@ -21,7 +21,7 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
     @IBOutlet var inputViewBottom: NSLayoutConstraint!
 
     // Create Todo Router
-    fileprivate var todoRouter = TNRouter<TodoRoute>()
+    fileprivate var todoRouter = Router<TodoRoute>()
 
     var state = State() {
         didSet { render() }
@@ -116,6 +116,7 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
     @IBAction func startInput() {
         inputTextView.text = nil
         inputTextView.becomeFirstResponder()
+
     }
 
     @objc func keyboardWillShow(notification: Notification) {
@@ -163,44 +164,47 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
 
     // MARK: Networking Helpers
     private func apiTodos(success: (([Todo], [Todo])->())?) {
-        todoRouter.request(for: .todos).start(responseType: RSTodosResponse.self,
-                                              onSuccess: { response in
-
-            let todos = self.mapTodos(response.todos)
-            success?(todos.completed, todos.uncompleted)
-        }) { (error, data) in
-            debugPrint(error.localizedDescription as Any)
-        }
+        todoRouter.request(for: .todos)
+            .success(responseType: RSTodosResponse.self) { response in
+                let todos = self.mapTodos(response.todos)
+                success?(todos.completed, todos.uncompleted)
+            }
+            .failure { error in
+                debugPrint(error.localizedDescription as Any)
+            }
     }
 
     private func apiAddTodo(todo: Todo, success: (()->())?) {
-        todoRouter.request(for: .addTodo(text: todo.text)).start(responseType: GenericSuccess.self,
-                                                                 onSuccess: { response in
-            success?()
-        }) { (error, data) in
-            debugPrint(error.localizedDescription as Any)
-        }
+        todoRouter.request(for: .addTodo(text: todo.text))
+            .success(responseType: GenericSuccess.self) { response in
+                success?()
+            }
+            .failure { error in
+                debugPrint(error.localizedDescription as Any)
+            }
     }
 
     private func apiDeleteTodo(todo: Todo, success: (()->())?) {
-        todoRouter.request(for: .deleteTodo(id: todo.id)).start(responseType: GenericSuccess.self,
-                                                                onSuccess: { response in
-            success?()
-        }) { (error, data) in
-            debugPrint(error.localizedDescription as Any)
-        }
+        todoRouter.request(for: .deleteTodo(id: todo.id))
+            .success(responseType: GenericSuccess.self) { response in
+                success?()
+            }
+            .failure { error in
+                debugPrint(error.localizedDescription as Any)
+            }
     }
 
     private func apiToggleTodo(todo: Todo, success: (()->())?) {
         let completed = !state.completed.contains(where: { $0.id == todo.id })
         todoRouter.request(for: .updateTodo(id: todo.id,
                                             text: todo.text,
-                                            completed: completed)).start(responseType: GenericSuccess.self,
-                                                                         onSuccess: { response in
-            success?()
-        }) { (error, data) in
-            debugPrint(error.localizedDescription as Any)
-        }
+                                            completed: completed))
+            .success(responseType: GenericSuccess.self) { response in
+                success?()
+            }
+            .failure { error in
+                debugPrint(error.localizedDescription as Any)
+            }
     }
 
     private func mapTodos(_ todos: [RSTodo]) -> (completed: [Todo], uncompleted: [Todo]) {
