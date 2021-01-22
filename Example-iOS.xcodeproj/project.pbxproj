@@ -31,7 +31,7 @@
 		6BE9F755235F7CBF0023EF98 /* MagazineLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 6BE9F754235F7CBF0023EF98 /* MagazineLayout */; };
 		6BE9F758235F7CF50023EF98 /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6BE9F757235F7CF50023EF98 /* SwipeCellKit */; };
 		F39D1CF02512017600C8A096 /* GenericResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39D1CEF2512017600C8A096 /* GenericResponse.swift */; };
-		F3C1A69D2510C1A10006A872 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C1A69C2510C1A10006A872 /* Environment.swift */; };
+		F3C1A69D2510C1A10006A872 /* Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C1A69C2510C1A10006A872 /* Env.swift */; };
 		F3DEF1552510C61900F535E4 /* TodoRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DEF1542510C61900F535E4 /* TodoRoute.swift */; };
 		F3DEF1582510C8F500F535E4 /* RSTodosResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DEF1572510C8F500F535E4 /* RSTodosResponse.swift */; };
 		F3DEF15A2510C90300F535E4 /* RSTodo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DEF1592510C90300F535E4 /* RSTodo.swift */; };
@@ -85,7 +85,7 @@
 		B3CA655F24338DE5000610FD /* DifferenceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = DifferenceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCBF513BC6E020513AC0FC8F /* Pods_Example_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F39D1CEF2512017600C8A096 /* GenericResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericResponse.swift; sourceTree = "<group>"; };
-		F3C1A69C2510C1A10006A872 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		F3C1A69C2510C1A10006A872 /* Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Env.swift; sourceTree = "<group>"; };
 		F3DEF1542510C61900F535E4 /* TodoRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoRoute.swift; sourceTree = "<group>"; };
 		F3DEF1572510C8F500F535E4 /* RSTodosResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSTodosResponse.swift; sourceTree = "<group>"; };
 		F3DEF1592510C90300F535E4 /* RSTodo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSTodo.swift; sourceTree = "<group>"; };
@@ -210,7 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				F39D1CEE2512015F00C8A096 /* Rest Models */,
-				F3C1A69C2510C1A10006A872 /* Environment.swift */,
+				F3C1A69C2510C1A10006A872 /* Env.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -375,7 +375,7 @@
 				6B5A987B21E8EED30013BB95 /* TodoText.swift in Sources */,
 				F3DEF1582510C8F500F535E4 /* RSTodosResponse.swift in Sources */,
 				6BBC279121ECF91A00446FB7 /* TodoEmpty.swift in Sources */,
-				F3C1A69D2510C1A10006A872 /* Environment.swift in Sources */,
+				F3C1A69D2510C1A10006A872 /* Env.swift in Sources */,
 				6B6594E721E2650000291AAF /* NibLoadable.swift in Sources */,
 				F3DEF1552510C61900F535E4 /* TodoRoute.swift in Sources */,
 				6BBC279C21EE2F8200446FB7 /* Deletable.swift in Sources */,
