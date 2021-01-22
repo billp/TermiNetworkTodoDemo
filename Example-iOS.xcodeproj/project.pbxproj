@@ -35,7 +35,6 @@
 		F3DEF1552510C61900F535E4 /* TodoRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DEF1542510C61900F535E4 /* TodoRoute.swift */; };
 		F3DEF1582510C8F500F535E4 /* RSTodosResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DEF1572510C8F500F535E4 /* RSTodosResponse.swift */; };
 		F3DEF15A2510C90300F535E4 /* RSTodo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DEF1592510C90300F535E4 /* RSTodo.swift */; };
-		F3DEF15E2510CAC500F535E4 /* MockData.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F3DEF15D2510CAC500F535E4 /* MockData.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -89,7 +88,6 @@
 		F3DEF1542510C61900F535E4 /* TodoRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoRoute.swift; sourceTree = "<group>"; };
 		F3DEF1572510C8F500F535E4 /* RSTodosResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSTodosResponse.swift; sourceTree = "<group>"; };
 		F3DEF1592510C90300F535E4 /* RSTodo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSTodo.swift; sourceTree = "<group>"; };
-		F3DEF15D2510CAC500F535E4 /* MockData.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MockData.bundle; sourceTree = "<group>"; };
 		F48AE3F2BA73D8CE4168B813 /* Pods-Example-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-iOS.debug.xcconfig"; path = "Target Support Files/Pods-Example-iOS/Pods-Example-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -235,7 +233,6 @@
 		F3DEF15C2510CA9600F535E4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F3DEF15D2510CAC500F535E4 /* MockData.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -313,7 +310,6 @@
 				6B21A49521E279AB00568841 /* Assets.xcassets in Resources */,
 				6B5A987921E8ED740013BB95 /* TodoViewController.xib in Resources */,
 				6BBC279321ECFE6A00446FB7 /* TodoEmptyContent.xib in Resources */,
-				F3DEF15E2510CAC500F535E4 /* MockData.bundle in Resources */,
 				6B5A987F21E8F2090013BB95 /* TodoTextContent.xib in Resources */,
 				6B6594DA21E2619E00291AAF /* LaunchScreen.storyboard in Resources */,
 				6B21A4A921E3ADE700568841 /* HeaderContent.xib in Resources */,

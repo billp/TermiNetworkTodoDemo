@@ -37,11 +37,6 @@ enum Env: EnvironmentProtocol {
         // Set JSON as default param encode type
         conf.requestBodyType = .JSON
 
-        // Use mock data
-        if let mockDataPath = Bundle.main.path(forResource: "MockData", ofType: "bundle") {
-            conf.mockDataBundle = Bundle.init(path: mockDataPath)
-            conf.mockDataEnabled = true
-        }
         return conf
     }
 }

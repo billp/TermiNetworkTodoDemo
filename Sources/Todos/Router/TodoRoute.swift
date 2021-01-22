@@ -20,25 +20,21 @@ enum TodoRoute: RouteProtocol {
         switch self {
         case .todos:
             return RouteConfiguration(method: .get,
-                                        path: .path(["todos"]),
-                                        mockFilePath: .path(["Todos", "todos.json"]))
+                                        path: .path(["todos"]))
         case .todo(let id):
             return RouteConfiguration(method: .get,
                                         path: .path(["todos", String(id)]))
         case .addTodo(let text):
             return RouteConfiguration(method: .post,
                                         path: .path(["todos"]),
-                                        params: ["text": text],
-                                        mockFilePath: .path(["generic-success.json"]))
+                                        params: ["text": text])
         case .updateTodo(let id, let text, let completed):
             return RouteConfiguration(method: .patch,
                                         path: .path(["todos", String(id)]),
-                                        params: ["text": text, "completed": completed],
-                                        mockFilePath: .path(["generic-success.json"]))
+                                        params: ["text": text, "completed": completed])
         case .deleteTodo(let id):
             return RouteConfiguration(method: .delete,
-                                        path: .path(["todos", String(id)]),
-                                        mockFilePath: .path(["generic-success.json"]))
+                                        path: .path(["todos", String(id)]))
         }
     }
 }
