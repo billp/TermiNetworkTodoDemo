@@ -208,11 +208,10 @@ final class TodoViewController: UIViewController, UITextViewDelegate {
     }
 
     private func mapTodos(_ todos: [RSTodo]) -> (completed: [Todo], uncompleted: [Todo]) {
-        let rsTodos = todos.filter({ !$0.completed })
-        let rsTodosCompleted = todos.filter({ $0.completed })
+        let uncompleted = todos.filter({ !$0.completed }).map { Todo.init(id: $0.id, text: $0.title) }
+        let completed = todos.filter({ $0.completed }).map { Todo.init(id: $0.id, text: $0.title) }
 
-        return (completed: rsTodos.map({ Todo.init(id: $0.id, text: $0.title) }),
-                uncompleted: rsTodosCompleted.map { Todo.init(id: $0.id, text: $0.title) })
+        return (completed: completed, uncompleted: uncompleted)
     }
 }
 
